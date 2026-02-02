@@ -57,6 +57,22 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        status: {
+          pending: "hsl(var(--status-pending))",
+          approved: "hsl(var(--status-approved))",
+          rejected: "hsl(var(--status-rejected))",
+          urgent: "hsl(var(--status-urgent))",
+        },
+        stage: {
+          new: "hsl(var(--stage-new))",
+          assessment: "hsl(var(--stage-assessment))",
+          insurance: "hsl(var(--stage-insurance))",
+          repair: "hsl(var(--stage-repair))",
+          ready: "hsl(var(--stage-ready))",
+        },
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         lg: "var(--radius)",
