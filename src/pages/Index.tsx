@@ -60,6 +60,18 @@ const Index = () => {
     });
   };
 
+  const handleTogglePriority = (caseId: string) => {
+    const caseData = cases.find((c) => c.id === caseId);
+    if (caseData) {
+      const newPriority = caseData.priority === 'urgent' ? 'normal' : 'urgent';
+      updateCase(caseId, { priority: newPriority });
+      toast({
+        title: newPriority === 'urgent' ? 'Marked Urgent' : 'Set to Normal',
+        description: `${caseData.customerName}'s priority updated.`,
+      });
+    }
+  };
+
   const handleAddNote = (caseId: string, text: string) => {
     addNote(caseId, text);
     setNoteDialogCase(null);
@@ -161,6 +173,7 @@ const Index = () => {
             }}
             onDeleteCase={handleDeleteCase}
             onCaseClick={setSelectedCase}
+            onTogglePriority={handleTogglePriority}
           />
         )}
       </main>

@@ -1,9 +1,10 @@
 export type CaseStage = 
   | 'new-intake'
   | 'damage-assessment'
-  | 'insurance-claim'
   | 'repair-in-progress'
-  | 'ready-for-delivery';
+  | 'insurance-claim'
+  | 'ready-for-delivery'
+  | 'case-closed';
 
 export type InsuranceStatus = 'pending' | 'approved' | 'rejected' | 'not-applicable';
 export type PartsStatus = 'not-ordered' | 'ordered' | 'arrived';
@@ -35,15 +36,17 @@ export interface Case {
 export const STAGE_LABELS: Record<CaseStage, string> = {
   'new-intake': 'New Intake',
   'damage-assessment': 'Damage Assessment',
-  'insurance-claim': 'Insurance Claim',
   'repair-in-progress': 'Repair In-Progress',
+  'insurance-claim': 'Insurance Claim',
   'ready-for-delivery': 'Ready for Delivery',
+  'case-closed': 'Case Closed',
 };
 
 export const STAGE_ORDER: CaseStage[] = [
   'new-intake',
   'damage-assessment',
-  'insurance-claim',
   'repair-in-progress',
+  'insurance-claim',
   'ready-for-delivery',
+  'case-closed',
 ];

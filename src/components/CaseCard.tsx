@@ -1,4 +1,4 @@
-import { Case, STAGE_LABELS, CaseStage } from '@/types/case';
+import { Case, STAGE_LABELS, CaseStage, Priority } from '@/types/case';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,7 @@ import {
   MoreVertical,
   MessageSquare,
   Trash2,
+  Flag,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
@@ -27,6 +28,7 @@ interface CaseCardProps {
   onAddNote: () => void;
   onDelete: () => void;
   onClick: () => void;
+  onTogglePriority: () => void;
 }
 
 const insuranceColors = {
@@ -48,13 +50,15 @@ export function CaseCard({
   onAddNote,
   onDelete,
   onClick,
+  onTogglePriority,
 }: CaseCardProps) {
   const stages: CaseStage[] = [
     'new-intake',
     'damage-assessment',
-    'insurance-claim',
     'repair-in-progress',
+    'insurance-claim',
     'ready-for-delivery',
+    'case-closed',
   ];
 
   const currentStageIndex = stages.indexOf(caseData.stage);
@@ -95,6 +99,10 @@ export function CaseCard({
               <DropdownMenuItem onClick={onAddNote}>
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Add Note
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onTogglePriority}>
+                <Flag className="h-4 w-4 mr-2" />
+                {caseData.priority === 'urgent' ? 'Set Normal Priority' : 'Mark as Urgent'}
               </DropdownMenuItem>
               {nextStage && (
                 <DropdownMenuItem onClick={() => onMoveToStage(nextStage)}>

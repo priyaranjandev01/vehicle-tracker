@@ -8,6 +8,7 @@ interface KanbanBoardProps {
   onAddNote: (caseId: string) => void;
   onDeleteCase: (caseId: string) => void;
   onCaseClick: (caseData: Case) => void;
+  onTogglePriority: (caseId: string) => void;
 }
 
 export function KanbanBoard({
@@ -16,6 +17,7 @@ export function KanbanBoard({
   onAddNote,
   onDeleteCase,
   onCaseClick,
+  onTogglePriority,
 }: KanbanBoardProps) {
   const getCasesByStage = (stage: CaseStage) =>
     cases
@@ -39,6 +41,7 @@ export function KanbanBoard({
             onAddNote={onAddNote}
             onDeleteCase={onDeleteCase}
             onCaseClick={onCaseClick}
+            onTogglePriority={onTogglePriority}
           />
         ))}
       </div>

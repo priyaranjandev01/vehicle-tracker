@@ -10,14 +10,16 @@ interface KanbanColumnProps {
   onAddNote: (caseId: string) => void;
   onDeleteCase: (caseId: string) => void;
   onCaseClick: (caseData: Case) => void;
+  onTogglePriority: (caseId: string) => void;
 }
 
 const stageColors: Record<CaseStage, string> = {
   'new-intake': 'bg-stage-new',
   'damage-assessment': 'bg-stage-assessment',
-  'insurance-claim': 'bg-stage-insurance',
   'repair-in-progress': 'bg-stage-repair',
+  'insurance-claim': 'bg-stage-insurance',
   'ready-for-delivery': 'bg-stage-ready',
+  'case-closed': 'bg-muted-foreground',
 };
 
 export function KanbanColumn({
@@ -27,6 +29,7 @@ export function KanbanColumn({
   onAddNote,
   onDeleteCase,
   onCaseClick,
+  onTogglePriority,
 }: KanbanColumnProps) {
   return (
     <div className="flex flex-col min-w-[280px] max-w-[320px] bg-secondary/50 rounded-lg">
@@ -57,6 +60,7 @@ export function KanbanColumn({
                 onAddNote={() => onAddNote(caseData.id)}
                 onDelete={() => onDeleteCase(caseData.id)}
                 onClick={() => onCaseClick(caseData)}
+                onTogglePriority={() => onTogglePriority(caseData.id)}
               />
             ))
           )}
