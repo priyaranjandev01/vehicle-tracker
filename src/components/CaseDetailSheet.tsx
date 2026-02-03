@@ -24,9 +24,12 @@ import {
   AlertTriangle,
   MessageSquare,
   Send,
+  ImageIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { PhotoCapture } from '@/components/PhotoCapture';
+import { PhotoGallery } from '@/components/PhotoGallery';
 
 interface CaseDetailSheetProps {
   caseData: Case | null;
@@ -34,6 +37,8 @@ interface CaseDetailSheetProps {
   onOpenChange: (open: boolean) => void;
   onUpdateCase: (id: string, updates: Partial<Case>) => void;
   onAddNote: (caseId: string, text: string) => void;
+  onAddPhoto: (caseId: string, dataUrl: string) => void;
+  onDeletePhoto: (caseId: string, photoId: string) => void;
 }
 
 const insuranceColors = {
@@ -55,6 +60,8 @@ export function CaseDetailSheet({
   onOpenChange,
   onUpdateCase,
   onAddNote,
+  onAddPhoto,
+  onDeletePhoto,
 }: CaseDetailSheetProps) {
   const [newNote, setNewNote] = useState('');
 
@@ -188,6 +195,25 @@ export function CaseDetailSheet({
                 </Select>
               </div>
             </div>
+          </div>
+
+          <Separator />
+
+          {/* Photos Section */}
+          <div className="space-y-3">
+            <h3 className="font-semibold flex items-center gap-2">
+              <ImageIcon className="h-4 w-4" />
+              Photos ({caseData.photos?.length || 0})
+            </h3>
+
+            <PhotoCapture
+              onPhotoCapture={(dataUrl) => onAddPhoto(caseData.id, dataUrl)}
+            />
+
+            <PhotoGallery
+              photos={caseData.photos || []}
+              onDeletePhoto={(photoId) => onDeletePhoto(caseData.id, photoId)}
+            />
           </div>
 
           <Separator />
