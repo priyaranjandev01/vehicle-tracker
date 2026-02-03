@@ -15,8 +15,12 @@ const Index = () => {
   const { toast } = useToast();
 
   const [showAddDialog, setShowAddDialog] = useState(false);
-  const [selectedCase, setSelectedCase] = useState<Case | null>(null);
-  const [noteDialogCase, setNoteDialogCase] = useState<Case | null>(null);
+  const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
+  const [noteDialogCaseId, setNoteDialogCaseId] = useState<string | null>(null);
+
+  // Derive selected cases from the current cases array for real-time updates
+  const selectedCase = selectedCaseId ? cases.find(c => c.id === selectedCaseId) || null : null;
+  const noteDialogCase = noteDialogCaseId ? cases.find(c => c.id === noteDialogCaseId) || null : null;
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterPriority, setFilterPriority] = useState('all');
@@ -74,7 +78,7 @@ const Index = () => {
 
   const handleAddNote = (caseId: string, text: string) => {
     addNote(caseId, text);
-    setNoteDialogCase(null);
+    setNoteDialogCaseId(null);
     toast({
       title: 'Note Added',
       description: 'Your note has been saved.',
@@ -167,12 +171,9 @@ const Index = () => {
           <KanbanBoard
             cases={filteredCases}
             onMoveCase={moveCase}
-            onAddNote={(caseId) => {
-              const caseData = cases.find((c) => c.id === caseId);
-              if (caseData) setNoteDialogCase(caseData);
-            }}
+            onAddNote={(caseId) => setNoteDialogCaseId(caseId)}
             onDeleteCase={handleDeleteCase}
-            onCaseClick={setSelectedCase}
+            onCaseClick={(caseData) => setSelectedCaseId(caseData.id)}
             onTogglePriority={handleTogglePriority}
           />
         )}
@@ -187,15 +188,15 @@ const Index = () => {
 
       <CaseDetailSheet
         caseData={selectedCase}
-        open={!!selectedCase}
-        onOpenChange={(open) => !open && setSelectedCase(null)}
+        open={!!selectedCaseId}
+        onOpenChange={(open) => !open && setSelectedCaseId(null)}
         onUpdateCase={updateCase}
         onAddNote={handleAddNote}
       />
 
       <AddNoteDialog
-        open={!!noteDialogCase}
-        onOpenChange={(open) => !open && setNoteDialogCase(null)}
+        open={!!noteDialogCaseId}
+        onOpenChange={(open) => !open && setNoteDialogCaseId(null)}
         onAddNote={(text) => noteDialogCase && handleAddNote(noteDialogCase.id, text)}
         customerName={noteDialogCase?.customerName}
       />
