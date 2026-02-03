@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { X, Trash2, ZoomIn } from 'lucide-react';
+import { X, Trash2, ZoomIn, Download } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface PhotoGalleryProps {
@@ -15,6 +15,15 @@ interface PhotoGalleryProps {
   onDeletePhoto?: (photoId: string) => void;
   readOnly?: boolean;
 }
+
+const downloadImage = (dataUrl: string, filename: string) => {
+  const link = document.createElement('a');
+  link.href = dataUrl;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 
 export function PhotoGallery({ photos, onDeletePhoto, readOnly }: PhotoGalleryProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<CasePhoto | null>(null);
@@ -44,18 +53,33 @@ export function PhotoGallery({ photos, onDeletePhoto, readOnly }: PhotoGalleryPr
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
               <ZoomIn className="h-6 w-6 text-white" />
             </div>
-            {!readOnly && onDeletePhoto && (
-              <Button
-                size="icon"
-                variant="destructive"
-                className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDeletePhoto(photo.id);
-                }}
-              >
-                <X className="h-3 w-3" />
-              </Button>
+            {!readOnly && (
+              <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  className="h-6 w-6"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    downloadImage(photo.dataUrl, `photo-${photo.id.slice(0, 8)}.jpg`);
+                  }}
+                >
+                  <Download className="h-3 w-3" />
+                </Button>
+                {onDeletePhoto && (
+                  <Button
+                    size="icon"
+                    variant="destructive"
+                    className="h-6 w-6"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeletePhoto(photo.id);
+                    }}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
             )}
           </div>
         ))}
@@ -70,26 +94,39 @@ export function PhotoGallery({ photos, onDeletePhoto, readOnly }: PhotoGalleryPr
             </DialogTitle>
           </DialogHeader>
           {selectedPhoto && (
-            <div className="relative flex items-center justify-center">
+            <div className="relative flex flex-col items-center justify-center gap-4">
               <img
                 src={selectedPhoto.dataUrl}
                 alt={selectedPhoto.caption || 'Case photo'}
-                className="max-w-full max-h-[70vh] object-contain rounded-lg"
+                className="max-w-full max-h-[60vh] object-contain rounded-lg"
               />
-              {!readOnly && onDeletePhoto && (
+              <div className="flex gap-2">
                 <Button
-                  variant="destructive"
+                  variant="outline"
                   size="sm"
-                  className="absolute bottom-4 right-4 gap-2"
+                  className="gap-2"
                   onClick={() => {
-                    onDeletePhoto(selectedPhoto.id);
-                    setSelectedPhoto(null);
+                    downloadImage(selectedPhoto.dataUrl, `photo-${selectedPhoto.id.slice(0, 8)}.jpg`);
                   }}
                 >
-                  <Trash2 className="h-4 w-4" />
-                  Delete
+                  <Download className="h-4 w-4" />
+                  Download
                 </Button>
-              )}
+                {!readOnly && onDeletePhoto && (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="gap-2"
+                    onClick={() => {
+                      onDeletePhoto(selectedPhoto.id);
+                      setSelectedPhoto(null);
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Delete
+                  </Button>
+                )}
+              </div>
             </div>
           )}
         </DialogContent>

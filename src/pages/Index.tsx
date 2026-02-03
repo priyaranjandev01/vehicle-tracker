@@ -46,9 +46,10 @@ const Index = () => {
   }, [cases, searchQuery, filterPriority]);
 
   const handleAddCase = (
-    caseData: Omit<Case, 'id' | 'createdAt' | 'updatedAt' | 'notes' | 'photos'>
+    caseData: Omit<Case, 'id' | 'createdAt' | 'updatedAt' | 'notes' | 'photos'>,
+    initialPhotos?: string[]
   ) => {
-    addCase(caseData);
+    addCase(caseData, initialPhotos);
     toast({
       title: 'Case Created',
       description: `${caseData.customerName}'s case has been added.`,

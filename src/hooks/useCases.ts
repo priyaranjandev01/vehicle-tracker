@@ -38,12 +38,14 @@ export function useCases() {
     }
   }, [cases, isLoading]);
 
-  const addCase = useCallback((newCase: Omit<Case, 'id' | 'createdAt' | 'updatedAt' | 'notes' | 'photos'>) => {
+  const addCase = useCallback((newCase: Omit<Case, 'id' | 'createdAt' | 'updatedAt' | 'notes' | 'photos'>, initialPhotos?: string[]) => {
     const caseToAdd: Case = {
       ...newCase,
       id: crypto.randomUUID(),
       notes: [],
-      photos: [],
+      photos: initialPhotos 
+        ? initialPhotos.map(dataUrl => ({ id: crypto.randomUUID(), dataUrl, timestamp: new Date() }))
+        : [],
       createdAt: new Date(),
       updatedAt: new Date(),
     };

@@ -18,12 +18,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Case, CaseStage, InsuranceStatus, PartsStatus } from '@/types/case';
+import { Case, CaseStage, InsuranceStatus, PartsStatus, CasePhoto } from '@/types/case';
+import { PhotoCapture } from '@/components/PhotoCapture';
+import { ImageIcon, X } from 'lucide-react';
 
 interface AddCaseDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAddCase: (caseData: Omit<Case, 'id' | 'createdAt' | 'updatedAt' | 'notes' | 'photos'>) => void;
+  onAddCase: (caseData: Omit<Case, 'id' | 'createdAt' | 'updatedAt' | 'notes' | 'photos'>, initialPhotos?: string[]) => void;
 }
 
 const MAHINDRA_MODELS = [
@@ -63,6 +65,15 @@ export function AddCaseDialog({ open, onOpenChange, onAddCase }: AddCaseDialogPr
     damageDescription: '',
     isUrgent: false,
   });
+  const [photos, setPhotos] = useState<string[]>([]);
+
+  const handlePhotoCapture = (dataUrl: string) => {
+    setPhotos(prev => [...prev, dataUrl]);
+  };
+
+  const handleRemovePhoto = (index: number) => {
+    setPhotos(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,7 +89,7 @@ export function AddCaseDialog({ open, onOpenChange, onAddCase }: AddCaseDialogPr
       insuranceStatus: 'pending' as InsuranceStatus,
       partsStatus: 'not-ordered' as PartsStatus,
       priority: formData.isUrgent ? 'urgent' : 'normal',
-    });
+    }, photos.length > 0 ? photos : undefined);
 
     // Reset form
     setFormData({
@@ -90,6 +101,7 @@ export function AddCaseDialog({ open, onOpenChange, onAddCase }: AddCaseDialogPr
       damageDescription: '',
       isUrgent: false,
     });
+    setPhotos([]);
 
     onOpenChange(false);
   };
@@ -107,7 +119,7 @@ export function AddCaseDialog({ open, onOpenChange, onAddCase }: AddCaseDialogPr
           <DialogTitle className="text-xl">New Case Intake</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
           {/* Customer Info */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
@@ -206,6 +218,34 @@ export function AddCaseDialog({ open, onOpenChange, onAddCase }: AddCaseDialogPr
               placeholder="Describe the damage, accident details..."
               rows={3}
             />
+          </div>
+
+          {/* Photo Section - Optional */}
+          <div className="space-y-2 p-3 bg-secondary/50 rounded-lg border border-dashed">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <ImageIcon className="h-4 w-4 text-primary" />
+              Damage Photos
+              <span className="text-muted-foreground font-normal">(Recommended)</span>
+            </div>
+            <PhotoCapture onPhotoCapture={handlePhotoCapture} />
+            {photos.length > 0 && (
+              <div className="flex gap-2 flex-wrap mt-2">
+                {photos.map((photo, index) => (
+                  <div key={index} className="relative w-16 h-16 rounded-md overflow-hidden group">
+                    <img src={photo} alt={`Photo ${index + 1}`} className="w-full h-full object-cover" />
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="destructive"
+                      className="absolute top-0.5 right-0.5 h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => handleRemovePhoto(index)}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center justify-between p-3 bg-secondary rounded-lg">
