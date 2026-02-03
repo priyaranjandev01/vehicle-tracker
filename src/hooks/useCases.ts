@@ -17,9 +17,13 @@ export function useCases() {
         ...c,
         createdAt: new Date(c.createdAt),
         updatedAt: new Date(c.updatedAt),
-        notes: c.notes.map((n: any) => ({
+        notes: (c.notes || []).map((n: any) => ({
           ...n,
           timestamp: new Date(n.timestamp),
+        })),
+        photos: (c.photos || []).map((p: any) => ({
+          ...p,
+          timestamp: new Date(p.timestamp),
         })),
       }));
       setCases(casesWithDates);
@@ -34,11 +38,12 @@ export function useCases() {
     }
   }, [cases, isLoading]);
 
-  const addCase = useCallback((newCase: Omit<Case, 'id' | 'createdAt' | 'updatedAt' | 'notes'>) => {
+  const addCase = useCallback((newCase: Omit<Case, 'id' | 'createdAt' | 'updatedAt' | 'notes' | 'photos'>) => {
     const caseToAdd: Case = {
       ...newCase,
       id: crypto.randomUUID(),
       notes: [],
+      photos: [],
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -77,6 +82,37 @@ export function useCases() {
     );
   }, []);
 
+  const addPhoto = useCallback((caseId: string, dataUrl: string) => {
+    setCases(prev =>
+      prev.map(c =>
+        c.id === caseId
+          ? {
+              ...c,
+              photos: [
+                ...c.photos,
+                { id: crypto.randomUUID(), dataUrl, timestamp: new Date() },
+              ],
+              updatedAt: new Date(),
+            }
+          : c
+      )
+    );
+  }, []);
+
+  const deletePhoto = useCallback((caseId: string, photoId: string) => {
+    setCases(prev =>
+      prev.map(c =>
+        c.id === caseId
+          ? {
+              ...c,
+              photos: c.photos.filter(p => p.id !== photoId),
+              updatedAt: new Date(),
+            }
+          : c
+      )
+    );
+  }, []);
+
   const deleteCase = useCallback((id: string) => {
     setCases(prev => prev.filter(c => c.id !== id));
   }, []);
@@ -93,6 +129,8 @@ export function useCases() {
     updateCase,
     moveCase,
     addNote,
+    addPhoto,
+    deletePhoto,
     deleteCase,
     getCasesByStage,
   };

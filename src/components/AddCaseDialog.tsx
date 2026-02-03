@@ -23,7 +23,7 @@ import { Case, CaseStage, InsuranceStatus, PartsStatus } from '@/types/case';
 interface AddCaseDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAddCase: (caseData: Omit<Case, 'id' | 'createdAt' | 'updatedAt' | 'notes'>) => void;
+  onAddCase: (caseData: Omit<Case, 'id' | 'createdAt' | 'updatedAt' | 'notes' | 'photos'>) => void;
 }
 
 const MAHINDRA_MODELS = [

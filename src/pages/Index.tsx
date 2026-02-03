@@ -11,7 +11,7 @@ import { Plus, Car, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
-  const { cases, addCase, updateCase, moveCase, addNote, deleteCase } = useCases();
+  const { cases, addCase, updateCase, moveCase, addNote, addPhoto, deletePhoto, deleteCase } = useCases();
   const { toast } = useToast();
 
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -46,7 +46,7 @@ const Index = () => {
   }, [cases, searchQuery, filterPriority]);
 
   const handleAddCase = (
-    caseData: Omit<Case, 'id' | 'createdAt' | 'updatedAt' | 'notes'>
+    caseData: Omit<Case, 'id' | 'createdAt' | 'updatedAt' | 'notes' | 'photos'>
   ) => {
     addCase(caseData);
     toast({
@@ -192,6 +192,8 @@ const Index = () => {
         onOpenChange={(open) => !open && setSelectedCaseId(null)}
         onUpdateCase={updateCase}
         onAddNote={handleAddNote}
+        onAddPhoto={addPhoto}
+        onDeletePhoto={deletePhoto}
       />
 
       <AddNoteDialog

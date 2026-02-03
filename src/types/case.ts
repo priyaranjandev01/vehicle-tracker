@@ -16,6 +16,13 @@ export interface CaseNote {
   timestamp: Date;
 }
 
+export interface CasePhoto {
+  id: string;
+  dataUrl: string; // Compressed base64 image
+  timestamp: Date;
+  caption?: string;
+}
+
 export interface Case {
   id: string;
   customerName: string;
@@ -29,6 +36,7 @@ export interface Case {
   partsStatus: PartsStatus;
   priority: Priority;
   notes: CaseNote[];
+  photos: CasePhoto[];
   createdAt: Date;
   updatedAt: Date;
 }
