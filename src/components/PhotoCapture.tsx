@@ -46,9 +46,9 @@ export function PhotoCapture({ onPhotoCapture, disabled }: PhotoCaptureProps) {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleFile(file);
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      Array.from(files).forEach(file => handleFile(file));
     }
     // Reset input so same file can be selected again
     e.target.value = '';
@@ -67,11 +67,12 @@ export function PhotoCapture({ onPhotoCapture, disabled }: PhotoCaptureProps) {
         disabled={disabled || isCompressing}
       />
       
-      {/* Gallery/file upload */}
+      {/* Gallery/file upload - multiple selection enabled */}
       <input
         ref={fileInputRef}
         type="file"
         accept="image/*"
+        multiple
         onChange={handleFileChange}
         className="hidden"
         disabled={disabled || isCompressing}

@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { X, Trash2, ZoomIn, Download } from 'lucide-react';
 import { format } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 
 interface PhotoGalleryProps {
   photos: CasePhoto[];
@@ -16,17 +17,39 @@ interface PhotoGalleryProps {
   readOnly?: boolean;
 }
 
-const downloadImage = (dataUrl: string, filename: string) => {
-  const link = document.createElement('a');
-  link.href = dataUrl;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+const downloadImage = (dataUrl: string, filename: string): boolean => {
+  try {
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 export function PhotoGallery({ photos, onDeletePhoto, readOnly }: PhotoGalleryProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<CasePhoto | null>(null);
+  const { toast } = useToast();
+
+  const handleDownload = (dataUrl: string, photoId: string) => {
+    const success = downloadImage(dataUrl, `photo-${photoId.slice(0, 8)}.jpg`);
+    if (success) {
+      toast({
+        title: 'Downloaded successfully',
+        description: 'Photo saved to your device.',
+      });
+    } else {
+      toast({
+        title: 'Download failed',
+        description: 'Could not download the photo.',
+        variant: 'destructive',
+      });
+    }
+  };
 
   if (photos.length === 0) {
     return (
@@ -61,7 +84,7 @@ export function PhotoGallery({ photos, onDeletePhoto, readOnly }: PhotoGalleryPr
                   className="h-6 w-6"
                   onClick={(e) => {
                     e.stopPropagation();
-                    downloadImage(photo.dataUrl, `photo-${photo.id.slice(0, 8)}.jpg`);
+                    handleDownload(photo.dataUrl, photo.id);
                   }}
                 >
                   <Download className="h-3 w-3" />
@@ -105,9 +128,7 @@ export function PhotoGallery({ photos, onDeletePhoto, readOnly }: PhotoGalleryPr
                   variant="outline"
                   size="sm"
                   className="gap-2"
-                  onClick={() => {
-                    downloadImage(selectedPhoto.dataUrl, `photo-${selectedPhoto.id.slice(0, 8)}.jpg`);
-                  }}
+                  onClick={() => handleDownload(selectedPhoto.dataUrl, selectedPhoto.id)}
                 >
                   <Download className="h-4 w-4" />
                   Download
