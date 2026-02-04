@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Combobox } from '@/components/ui/combobox';
 import { Switch } from '@/components/ui/switch';
 import { Case, CaseStage, InsuranceStatus, PartsStatus, CasePhoto } from '@/types/case';
 import { PhotoCapture } from '@/components/PhotoCapture';
@@ -151,43 +152,29 @@ export function AddCaseDialog({ open, onOpenChange, onAddCase }: AddCaseDialogPr
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label>Vehicle Model *</Label>
-              <Select
+              <Combobox
+                options={MAHINDRA_MODELS}
                 value={formData.vehicleModel}
-                onValueChange={(value) =>
+                onChange={(value) =>
                   setFormData((prev) => ({ ...prev, vehicleModel: value }))
                 }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select model" />
-                </SelectTrigger>
-                <SelectContent>
-                  {MAHINDRA_MODELS.map((model) => (
-                    <SelectItem key={model} value={model}>
-                      {model}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                placeholder="Select or type model"
+                searchPlaceholder="Search or type model..."
+                emptyText="No model found"
+              />
             </div>
             <div className="space-y-1.5">
               <Label>Vehicle Color</Label>
-              <Select
+              <Combobox
+                options={VEHICLE_COLORS}
                 value={formData.vehicleColor}
-                onValueChange={(value) =>
+                onChange={(value) =>
                   setFormData((prev) => ({ ...prev, vehicleColor: value }))
                 }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select color" />
-                </SelectTrigger>
-                <SelectContent>
-                  {VEHICLE_COLORS.map((color) => (
-                    <SelectItem key={color} value={color}>
-                      {color}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                placeholder="Select or type color"
+                searchPlaceholder="Search or type color..."
+                emptyText="No color found"
+              />
             </div>
           </div>
 
