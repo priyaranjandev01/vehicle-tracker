@@ -10,16 +10,18 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus, Car, FileText, BookOpen, BarChart3 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const Index = () => {
   const { cases, addCase, updateCase, moveCase, addNote, addPhoto, deletePhoto, deleteCase } = useCases();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [showAddDialog, setShowAddDialog] = useState(false);
-  const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
   const [noteDialogCaseId, setNoteDialogCaseId] = useState<string | null>(null);
+
+  const selectedCaseId = searchParams.get('caseId');
 
   // Derive selected cases from the current cases array for real-time updates
   const selectedCase = selectedCaseId ? cases.find(c => c.id === selectedCaseId) || null : null;
@@ -101,6 +103,12 @@ const Index = () => {
       title: 'Note Added',
       description: 'Your note has been saved.',
     });
+  };
+
+  const handleOpenCase = (caseData: Case) => {
+    const next = new URLSearchParams(searchParams);
+    next.set('caseId', caseData.id);
+    setSearchParams(next);
   };
 
   const totalCases = cases.length;
@@ -265,7 +273,7 @@ const Index = () => {
             onMoveCase={moveCase}
             onAddNote={(caseId) => setNoteDialogCaseId(caseId)}
             onDeleteCase={handleDeleteCase}
-            onCaseClick={(caseData) => setSelectedCaseId(caseData.id)}
+            onCaseClick={handleOpenCase}
             onTogglePriority={handleTogglePriority}
           />
         )}
@@ -281,7 +289,13 @@ const Index = () => {
       <CaseDetailSheet
         caseData={selectedCase}
         open={!!selectedCaseId}
-        onOpenChange={(open) => !open && setSelectedCaseId(null)}
+        onOpenChange={(open) => {
+          if (!open) {
+            const next = new URLSearchParams(searchParams);
+            next.delete('caseId');
+            setSearchParams(next);
+          }
+        }}
         onUpdateCase={updateCase}
         onAddNote={handleAddNote}
         onAddPhoto={addPhoto}

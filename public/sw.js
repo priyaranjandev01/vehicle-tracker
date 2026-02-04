@@ -1,5 +1,5 @@
 /* Service worker to enable PWA installability and offline-friendly behavior */
-const CACHE_NAME = "vehicle-tracker-static-v2";
+const CACHE_NAME = "vehicle-tracker-static-v3";
 const OFFLINE_URLS = ["/", "/index.html", "/Mahindra-Logo.png"];
 
 self.addEventListener("install", (event) => {

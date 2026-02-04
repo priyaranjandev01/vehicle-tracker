@@ -2,9 +2,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { 
-  FileText, 
-  Download, 
+import {
+  FileText,
+  Download,
   ArrowLeft,
   Car,
   Camera,
@@ -14,6 +14,8 @@ import {
   Users,
   CheckCircle,
   ArrowRight,
+  BarChart3,
+  Smartphone,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { STAGE_LABELS, INSURANCE_LABELS } from '@/types/case';
@@ -56,7 +58,7 @@ export default function Documentation() {
       {/* Header - Hidden in print */}
       <header className="print:hidden sticky top-0 z-10 bg-background border-b px-4 py-3">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={() => navigate('/')}>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/', { replace: true })}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Dashboard
           </Button>
@@ -120,6 +122,42 @@ export default function Documentation() {
                 <p className="text-sm font-medium">Insurance Workflow</p>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick How-to for Advisors */}
+        <Card className="print:shadow-none print:border-0">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Smartphone className="h-5 w-5 text-primary" />
+              Daily usage in the workshop
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm text-muted-foreground">
+            <ol className="list-decimal list-inside space-y-1">
+              <li>
+                When a new accidental vehicle arrives, tap <strong>+</strong> on the top-right and create a{' '}
+                <strong>New Case</strong> with customer, vehicle details and a short damage description.
+              </li>
+              <li>
+                Take clear photos of all damaged panels from multiple angles. You can use{' '}
+                <strong>Camera</strong> or <strong>Gallery</strong>; the app automatically compresses images while
+                keeping damage details readable.
+              </li>
+              <li>
+                Move the card across the board as work progresses: from <strong>New Intake</strong> →{' '}
+                <strong>Damage Assessment</strong> → <strong>Repair in Progress</strong> →{' '}
+                <strong>Insurance</strong> / <strong>Ready for Delivery</strong> → <strong>Case Closed</strong>.
+              </li>
+              <li>
+                Use notes to record important updates (e.g. “customer informed”, “parts ETA 3 days”) instead of
+                keeping them in WhatsApp or paper.
+              </li>
+              <li>
+                At any point, open the case sheet to see photos, notes, insurance and parts status in one place
+                before talking to the customer.
+              </li>
+            </ol>
           </CardContent>
         </Card>
 
@@ -304,7 +342,72 @@ export default function Documentation() {
                   <li>• Toggle priority anytime</li>
                 </ul>
               </div>
+              <div className="p-4 border rounded-lg">
+                <h5 className="font-semibold mb-2">Dashboard & Summary</h5>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• Use the search bar to quickly find a customer or registration number.</li>
+                  <li>• Filter by priority, stage, insurance or parts to focus on specific work.</li>
+                  <li>• Open the <strong>Summary</strong> popup (bar chart icon) to see total, active, urgent, in-workshop, ready and closed cases.</li>
+                  <li>• Closed cases are excluded from urgent counts but still visible on the board.</li>
+                </ul>
+              </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Storage, photos & PWA behaviour */}
+        <Card className="print:shadow-none print:border-0">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Camera className="h-5 w-5 text-primary" />
+              Photo quality, storage & offline use
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm text-muted-foreground">
+            <ul className="space-y-1">
+              <li>• New photos are kept high quality (up to ~1400px wide) and typically stored around 200–350 KB per image.</li>
+              <li>• When a case is <strong>closed</strong> and has no updates for 15+ days, its photos are automatically re-compressed once to save space.</li>
+              <li>• This archival compression keeps older cases viewable while allowing many active cases with detailed photos.</li>
+              <li>• The app works as a <strong>PWA</strong>: install it from the browser and it will open in full-screen with offline support for existing cases.</li>
+            </ul>
+          </CardContent>
+        </Card>
+
+        {/* Installing as an app on mobile */}
+        <Card className="print:shadow-none print:border-0">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-primary" />
+              Install on Android & iPhone
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm text-muted-foreground">
+            <div>
+              <h4 className="font-semibold mb-1">Android (Chrome)</h4>
+              <ol className="list-decimal list-inside space-y-1">
+                <li>Open the ServiceDesk URL in Chrome (for example your Netlify link).</li>
+                <li>Wait a second for the page to fully load. You should see an <strong>Install app</strong> prompt in the address bar or a banner.</li>
+                <li>If the banner doesn&apos;t appear, tap the <strong>⋮</strong> menu in the top-right corner.</li>
+                <li>Choose <strong>Install app</strong> or <strong>Add to Home screen</strong>, then confirm.</li>
+                <li>ServiceDesk will appear on your home screen and open in full-screen like a native app.</li>
+              </ol>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-1">iPhone / iPad (Safari)</h4>
+              <ol className="list-decimal list-inside space-y-1">
+                <li>Open the ServiceDesk URL in <strong>Safari</strong> (Apple requires Safari for installable web apps).</li>
+                <li>Tap the <strong>Share</strong> icon (square with an up arrow) at the bottom of the screen.</li>
+                <li>Scroll down in the share sheet and tap <strong>Add to Home Screen</strong>.</li>
+                <li>Optionally edit the name (e.g. &quot;ServiceDesk&quot;), then tap <strong>Add</strong> in the top-right corner.</li>
+                <li>An icon will be created on your home screen; launching from there opens ServiceDesk in an app-like, full-screen window.</li>
+              </ol>
+            </div>
+
+            <p className="text-xs text-muted-foreground">
+              Note: you can capture your own device screenshots for training material and paste them into this document when exporting to PDF,
+              or attach them in separate SOP documents for your workshop team.
+            </p>
           </CardContent>
         </Card>
 
