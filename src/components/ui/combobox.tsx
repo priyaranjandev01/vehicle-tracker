@@ -98,39 +98,47 @@ export function Combobox({
             onValueChange={handleInputChange}
             onKeyDown={handleKeyDown}
           />
-          <CommandList className="max-h-[35vh] overflow-y-auto overscroll-contain touch-pan-y">
-            {filteredOptions.length === 0 && inputValue && (
-              <CommandEmpty className="py-2 px-3">
-                <button
-                  className="w-full text-left text-sm hover:bg-accent rounded px-2 py-1.5"
-                  onClick={() => handleSelect(inputValue)}
-                >
-                  Use "{inputValue}"
-                </button>
-              </CommandEmpty>
-            )}
-            {filteredOptions.length === 0 && !inputValue && (
-              <CommandEmpty>{emptyText}</CommandEmpty>
-            )}
-            <CommandGroup>
-              {filteredOptions.map((option) => (
-                <CommandItem
-                key={option}
-                value={option}
-                onSelect={() => handleSelect(option)}
-                className="min-h-[44px]"
-              >              
-                  <Check
-                    className={cn(
-                      'mr-2 h-4 w-4',
-                      value === option ? 'opacity-100' : 'opacity-0'
-                    )}
-                  />
-                  {option}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
+        <CommandList
+  className="max-h-[35vh] overflow-y-auto overscroll-contain touch-pan-y"
+  style={{ WebkitOverflowScrolling: 'touch' }}
+  onWheel={(e) => e.stopPropagation()}
+>
+
+  {filteredOptions.length === 0 && inputValue && (
+    <CommandEmpty className="py-2 px-3">
+      <button
+        className="w-full text-left text-sm hover:bg-accent rounded px-2 py-1.5"
+        onClick={() => handleSelect(inputValue)}
+      >
+        Use "{inputValue}"
+      </button>
+    </CommandEmpty>
+  )}
+
+  {filteredOptions.length === 0 && !inputValue && (
+    <CommandEmpty>{emptyText}</CommandEmpty>
+  )}
+
+  <CommandGroup>
+    {filteredOptions.map((option) => (
+      <CommandItem
+        key={option}
+        value={option}
+        onSelect={() => handleSelect(option)}
+        className="min-h-[44px]"
+      >
+        <Check
+          className={cn(
+            'mr-2 h-4 w-4',
+            value === option ? 'opacity-100' : 'opacity-0'
+          )}
+        />
+        {option}
+      </CommandItem>
+    ))}
+  </CommandGroup>
+</CommandList>
+
         </Command>
       </PopoverContent>
     </Popover>
