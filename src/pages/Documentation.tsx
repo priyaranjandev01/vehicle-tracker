@@ -78,7 +78,7 @@ export default function Documentation() {
               <FileText className="h-12 w-12 text-primary" />
             </div>
           </div>
-          <h1 className="text-4xl font-bold mb-2">ServiceDesk</h1>
+          <h1 className="text-4xl font-bold mb-2">VehicleDesk</h1>
           <p className="text-xl text-muted-foreground mb-4">
             Vehicle Repair Case Management System
           </p>
@@ -99,7 +99,7 @@ export default function Documentation() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p>
-              ServiceDesk is a mobile-first application designed for Mahindra service advisors 
+            VehicleDesk is a mobile-first application designed for Mahindra service advisors 
               to track accidental vehicle repairs. It prevents information loss when handling 
               multiple customers simultaneously by providing a structured workflow and 
               comprehensive case tracking.
@@ -385,22 +385,22 @@ export default function Documentation() {
             <div>
               <h4 className="font-semibold mb-1">Android (Chrome)</h4>
               <ol className="list-decimal list-inside space-y-1">
-                <li>Open the ServiceDesk URL in Chrome (for example your Netlify link).</li>
+                <li>Open the VehicleDesk URL in Chrome (for example your https://vehicledesk.netlify.app/ link).</li>
                 <li>Wait a second for the page to fully load. You should see an <strong>Install app</strong> prompt in the address bar or a banner.</li>
                 <li>If the banner doesn&apos;t appear, tap the <strong>⋮</strong> menu in the top-right corner.</li>
                 <li>Choose <strong>Install app</strong> or <strong>Add to Home screen</strong>, then confirm.</li>
-                <li>ServiceDesk will appear on your home screen and open in full-screen like a native app.</li>
+                <li>VehicleDesk will appear on your home screen and open in full-screen like a native app.</li>
               </ol>
             </div>
 
             <div>
               <h4 className="font-semibold mb-1">iPhone / iPad (Safari)</h4>
               <ol className="list-decimal list-inside space-y-1">
-                <li>Open the ServiceDesk URL in <strong>Safari</strong> (Apple requires Safari for installable web apps).</li>
+                <li>Open the VehicleDesk URL in <strong>Safari</strong> (Apple requires Safari for installable web apps).</li>
                 <li>Tap the <strong>Share</strong> icon (square with an up arrow) at the bottom of the screen.</li>
                 <li>Scroll down in the share sheet and tap <strong>Add to Home Screen</strong>.</li>
-                <li>Optionally edit the name (e.g. &quot;ServiceDesk&quot;), then tap <strong>Add</strong> in the top-right corner.</li>
-                <li>An icon will be created on your home screen; launching from there opens ServiceDesk in an app-like, full-screen window.</li>
+                <li>Optionally edit the name (e.g. &quot;VehicleDesk&quot;), then tap <strong>Add</strong> in the top-right corner.</li>
+                <li>An icon will be created on your home screen; launching from there opens VehicleDesk in an app-like, full-screen window.</li>
               </ol>
             </div>
 
@@ -410,7 +410,7 @@ export default function Documentation() {
         {/* Footer */}
         <div className="text-center py-8 text-muted-foreground text-sm print:mt-8">
           <Separator className="mb-4" />
-          <p>ServiceDesk - Vehicle Repair Case Management System</p>
+          <p>VehicleDesk - Vehicle Repair Case Management System</p>
           <p>© {new Date().getFullYear()} All rights reserved</p>
         </div>
       </main>
