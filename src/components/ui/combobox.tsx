@@ -94,31 +94,26 @@ export function Combobox({
             onOpenAutoFocus={(e) => e.preventDefault()}
             onCloseAutoFocus={(e) => e.preventDefault()}
           >
-        <Command shouldFilter={false}>
+        <Command shouldFilter={false} className="h-auto overflow-visible bg-transparent">
           <CommandInput
             placeholder={searchPlaceholder}
             value={inputValue}
             onValueChange={handleInputChange}
             onKeyDown={handleKeyDown}
           />
-       <CommandList
-            // 1. Ensure overflow-y-auto is present
-            className="max-h-[35vh] overflow-y-auto overscroll-contain touch-pan-y" 
-            
-            // 2. These styles enable native-like momentum scrolling on iOS
-            style={{ 
-              WebkitOverflowScrolling: 'touch',
-              pointerEvents: 'auto'
-            }}
-            
-            // 3. CRITICAL: Prevent touch drag from bubbling to the parent Modal/Dialog
-            onTouchStart={(e) => {
-              e.stopPropagation();
-            }}
-            
-            // 4. Existing wheel handler
-            onWheel={(e) => e.stopPropagation()}
-          >
+      <CommandList
+  className="max-h-[35vh] overflow-y-auto overscroll-contain touch-pan-y"
+  style={{ 
+    WebkitOverflowScrolling: 'touch',
+    pointerEvents: 'auto'
+  }}
+  onWheel={(e) => e.stopPropagation()}
+  
+  // 🛑 Add these three lines to kill the event bubbling 🛑
+  onTouchStart={(e) => e.stopPropagation()}
+  onTouchMove={(e) => e.stopPropagation()}
+  onTouchEnd={(e) => e.stopPropagation()}
+>
 
   {filteredOptions.length === 0 && inputValue && (
     <CommandEmpty className="py-2 px-3">
