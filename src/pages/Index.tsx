@@ -138,7 +138,7 @@ const Index = () => {
                 <Car className="h-6 w-6" />
               </div>
               <div>
-                <h1 className="text-xl font-bold">ServiceDesk</h1>
+                <h1 className="text-xl font-bold">VehicleDesk</h1>
                 <p className="text-xs text-primary-foreground/70">
                   Accident Vehicle Tracker
                 </p>
