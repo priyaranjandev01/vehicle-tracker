@@ -35,6 +35,7 @@ const MAHINDRA_MODELS = [
   'XUV700',
   'XUV400',
   'XUV300',
+  'XUV3X0',
   'Thar',
   'Thar Roxx',
   'Bolero',
