@@ -85,12 +85,12 @@ export function Combobox({
 
         {/* Mobile position fix */}
         <PopoverContent
-          className="w-[--radix-popover-trigger-width] p-0 z-50 bg-popover"
-          side="bottom"
-          align="start"
-          sideOffset={4}
-          avoidCollisions={false}
-        >
+            className="w-[--radix-popover-trigger-width] p-0 z-50 bg-popover"
+            side="bottom"
+            align="start"
+            sideOffset={4}
+            avoidCollisions={false}
+          >
         <Command shouldFilter={false}>
           <CommandInput
             placeholder={searchPlaceholder}
@@ -98,7 +98,7 @@ export function Combobox({
             onValueChange={handleInputChange}
             onKeyDown={handleKeyDown}
           />
-          <CommandList>
+          <CommandList className="max-h-[35vh] overflow-y-auto overscroll-contain touch-pan-y">
             {filteredOptions.length === 0 && inputValue && (
               <CommandEmpty className="py-2 px-3">
                 <button
@@ -115,10 +115,11 @@ export function Combobox({
             <CommandGroup>
               {filteredOptions.map((option) => (
                 <CommandItem
-                  key={option}
-                  value={option}
-                  onSelect={() => handleSelect(option)}
-                >
+                key={option}
+                value={option}
+                onSelect={() => handleSelect(option)}
+                className="min-h-[44px]"
+              >              
                   <Check
                     className={cn(
                       'mr-2 h-4 w-4',
