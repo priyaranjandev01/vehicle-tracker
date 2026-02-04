@@ -72,21 +72,32 @@ export function Combobox({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-       <PopoverContent
-          className="w-[--radix-popover-trigger-width] p-0 z-50 bg-popover max-h-[50vh] overflow-y-auto"
-          align="start"
+    {/* 
+        Old implementation:
+            Removed because dropdown position breaks on mobile keyboard open
+          */}
+          {/* 
+          <PopoverContent
+            className="w-[--radix-popover-trigger-width] p-0 z-50 bg-popover"
+            align="start"
+          />
+          */}
+
+        {/* Mobile position fix */}
+        <PopoverContent
+          className="w-[--radix-popover-trigger-width] p-0 z-50 bg-popover"
           side="bottom"
+          align="start"
           sideOffset={4}
           avoidCollisions={false}
         >
         <Command shouldFilter={false}>
-        <CommandInput
-          placeholder={searchPlaceholder}
-          value={inputValue}
-          onValueChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          autoFocus={false}
-        />
+          <CommandInput
+            placeholder={searchPlaceholder}
+            value={inputValue}
+            onValueChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+          />
           <CommandList>
             {filteredOptions.length === 0 && inputValue && (
               <CommandEmpty className="py-2 px-3">
@@ -104,11 +115,10 @@ export function Combobox({
             <CommandGroup>
               {filteredOptions.map((option) => (
                 <CommandItem
-                key={option}
-                value={option}
-                onSelect={() => handleSelect(option)}
-                className="min-h-[44px]"
-              >
+                  key={option}
+                  value={option}
+                  onSelect={() => handleSelect(option)}
+                >
                   <Check
                     className={cn(
                       'mr-2 h-4 w-4',

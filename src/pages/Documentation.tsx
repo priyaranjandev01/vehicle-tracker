@@ -404,10 +404,6 @@ export default function Documentation() {
               </ol>
             </div>
 
-            <p className="text-xs text-muted-foreground">
-              Note: you can capture your own device screenshots for training material and paste them into this document when exporting to PDF,
-              or attach them in separate SOP documents for your workshop team.
-            </p>
           </CardContent>
         </Card>
 
