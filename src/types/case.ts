@@ -6,7 +6,26 @@ export type CaseStage =
   | 'ready-for-delivery'
   | 'case-closed';
 
-export type InsuranceStatus = 'pending' | 'approved' | 'rejected' | 'not-applicable';
+export type InsuranceStatus = 
+  | 'not-applied'
+  | 'applied'
+  | 'inspector-scheduled'
+  | 'inspected'
+  | 'under-review'
+  | 'approved'
+  | 'rejected'
+  | 'not-applicable';
+
+export const INSURANCE_LABELS: Record<InsuranceStatus, string> = {
+  'not-applied': 'Not Applied',
+  'applied': 'Applied',
+  'inspector-scheduled': 'Inspector Scheduled',
+  'inspected': 'Inspected',
+  'under-review': 'Under Review',
+  'approved': 'Approved',
+  'rejected': 'Rejected',
+  'not-applicable': 'Not Applicable',
+};
 export type PartsStatus = 'not-ordered' | 'ordered' | 'arrived';
 export type Priority = 'normal' | 'urgent';
 

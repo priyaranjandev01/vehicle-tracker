@@ -1,4 +1,4 @@
-import { Case, STAGE_LABELS, CaseStage, Priority } from '@/types/case';
+import { Case, STAGE_LABELS, CaseStage, Priority, INSURANCE_LABELS, InsuranceStatus } from '@/types/case';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -31,10 +31,14 @@ interface CaseCardProps {
   onTogglePriority: () => void;
 }
 
-const insuranceColors = {
-  pending: 'bg-status-pending text-white',
-  approved: 'bg-status-approved text-white',
-  rejected: 'bg-status-rejected text-white',
+const insuranceColors: Record<InsuranceStatus, string> = {
+  'not-applied': 'bg-muted text-muted-foreground',
+  'applied': 'bg-blue-500 text-white',
+  'inspector-scheduled': 'bg-purple-500 text-white',
+  'inspected': 'bg-indigo-500 text-white',
+  'under-review': 'bg-status-pending text-white',
+  'approved': 'bg-status-approved text-white',
+  'rejected': 'bg-status-rejected text-white',
   'not-applicable': 'bg-muted text-muted-foreground',
 };
 
@@ -143,7 +147,7 @@ export function CaseCard({
         {/* Status Badges */}
         <div className="flex flex-wrap gap-1.5">
           <Badge className={cn('text-xs', insuranceColors[caseData.insuranceStatus])}>
-            Ins: {caseData.insuranceStatus}
+            {INSURANCE_LABELS[caseData.insuranceStatus]}
           </Badge>
           <Badge className={cn('text-xs', partsColors[caseData.partsStatus])}>
             Parts: {caseData.partsStatus.replace('-', ' ')}

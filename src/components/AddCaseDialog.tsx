@@ -87,7 +87,7 @@ export function AddCaseDialog({ open, onOpenChange, onAddCase }: AddCaseDialogPr
       registrationNumber: formData.registrationNumber.toUpperCase(),
       damageDescription: formData.damageDescription,
       stage: 'new-intake' as CaseStage,
-      insuranceStatus: 'pending' as InsuranceStatus,
+      insuranceStatus: 'not-applied' as InsuranceStatus,
       partsStatus: 'not-ordered' as PartsStatus,
       priority: formData.isUrgent ? 'urgent' : 'normal',
     }, photos.length > 0 ? photos : undefined);
