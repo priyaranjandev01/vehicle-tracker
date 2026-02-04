@@ -6,7 +6,7 @@
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
   "description": "Track and manage vehicle-related cases directly from your device.",
- "icons": [
+  "icons": [
     {
       "src": "/Mahindra-Logo.png",
       "sizes": "192x192",
@@ -17,6 +17,34 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New case",
+      "short_name": "New case",
+      "description": "Create a new accident case",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/Mahindra-Logo.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Urgent cases",
+      "short_name": "Urgent",
+      "description": "View urgent cases",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/Mahindra-Logo.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }

@@ -25,7 +25,10 @@ const Index = () => {
   const noteDialogCase = noteDialogCaseId ? cases.find(c => c.id === noteDialogCaseId) || null : null;
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterPriority, setFilterPriority] = useState('all');
+  const [filterPriority, setFilterPriority] = useState<'all' | 'urgent' | 'normal'>('all');
+  const [filterStage, setFilterStage] = useState<'all' | Case['stage']>('all');
+  const [filterInsurance, setFilterInsurance] = useState<'all' | Case['insuranceStatus']>('all');
+  const [filterParts, setFilterParts] = useState<'all' | Case['partsStatus']>('all');
 
   // Filter cases based on search and priority
   const filteredCases = useMemo(() => {
@@ -43,9 +46,20 @@ const Index = () => {
       const matchesPriority =
         filterPriority === 'all' || c.priority === filterPriority;
 
-      return matchesSearch && matchesPriority;
+      const matchesStage = filterStage === 'all' || c.stage === filterStage;
+      const matchesInsurance =
+        filterInsurance === 'all' || c.insuranceStatus === filterInsurance;
+      const matchesParts = filterParts === 'all' || c.partsStatus === filterParts;
+
+      return (
+        matchesSearch &&
+        matchesPriority &&
+        matchesStage &&
+        matchesInsurance &&
+        matchesParts
+      );
     });
-  }, [cases, searchQuery, filterPriority]);
+  }, [cases, searchQuery, filterPriority, filterStage, filterInsurance, filterParts]);
 
   const handleAddCase = (
     caseData: Omit<Case, 'id' | 'createdAt' | 'updatedAt' | 'notes' | 'photos'>,
@@ -90,6 +104,15 @@ const Index = () => {
 
   const totalCases = cases.length;
   const urgentCases = cases.filter((c) => c.priority === 'urgent').length;
+  const inWorkshop = cases.filter(
+    (c) =>
+      c.stage === 'damage-assessment' ||
+      c.stage === 'repair-in-progress' ||
+      c.stage === 'insurance-claim'
+  ).length;
+  const readyForDelivery = cases.filter(
+    (c) => c.stage === 'ready-for-delivery'
+  ).length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -149,11 +172,37 @@ const Index = () => {
       {/* Search & Filter Bar */}
       <div className="border-b bg-card">
         <div className="container mx-auto px-4 py-3">
+          {/* Stats row */}
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-3">
+            <div className="rounded-lg bg-muted px-3 py-2 text-sm">
+              <p className="text-muted-foreground text-xs">Total cases</p>
+              <p className="text-lg font-semibold">{totalCases}</p>
+            </div>
+            <div className="rounded-lg bg-status-urgent/10 px-3 py-2 text-sm">
+              <p className="text-xs text-status-urgent">Urgent cases</p>
+              <p className="text-lg font-semibold text-status-urgent">{urgentCases}</p>
+            </div>
+            <div className="rounded-lg bg-muted px-3 py-2 text-sm">
+              <p className="text-muted-foreground text-xs">In workshop</p>
+              <p className="text-lg font-semibold">{inWorkshop}</p>
+            </div>
+            <div className="rounded-lg bg-muted px-3 py-2 text-sm">
+              <p className="text-muted-foreground text-xs">Ready for delivery</p>
+              <p className="text-lg font-semibold">{readyForDelivery}</p>
+            </div>
+          </div>
+
           <SearchFilter
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             filterPriority={filterPriority}
             onFilterPriorityChange={setFilterPriority}
+            filterStage={filterStage}
+            onFilterStageChange={setFilterStage}
+            filterInsurance={filterInsurance}
+            onFilterInsuranceChange={setFilterInsurance}
+            filterParts={filterParts}
+            onFilterPartsChange={setFilterParts}
           />
         </div>
       </div>

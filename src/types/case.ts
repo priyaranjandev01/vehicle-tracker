@@ -40,6 +40,8 @@ export interface CasePhoto {
   dataUrl: string; // Compressed base64 image
   timestamp: Date;
   caption?: string;
+  /** Whether this photo has been aggressively archived to save space */
+  archived?: boolean;
 }
 
 export interface Case {
