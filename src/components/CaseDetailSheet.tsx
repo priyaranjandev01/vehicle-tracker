@@ -123,7 +123,7 @@ export function CaseDetailSheet({
           {/* Damage Description */}
           <div>
             <h3 className="font-semibold mb-2">Damage Description</h3>
-            <p className="text-sm text-muted-foreground bg-muted p-3 rounded-lg">
+            <p className="text-sm text-muted-foreground bg-muted p-3 rounded-lg break-words">
               {caseData.damageDescription || 'No description provided'}
             </p>
           </div>

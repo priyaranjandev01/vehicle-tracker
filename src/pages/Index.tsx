@@ -7,7 +7,8 @@ import { CaseDetailSheet } from '@/components/CaseDetailSheet';
 import { AddNoteDialog } from '@/components/AddNoteDialog';
 import { SearchFilter } from '@/components/SearchFilter';
 import { Button } from '@/components/ui/button';
-import { Plus, Car, FileText, BookOpen } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Plus, Car, FileText, BookOpen, BarChart3 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 
@@ -103,7 +104,9 @@ const Index = () => {
   };
 
   const totalCases = cases.length;
-  const urgentCases = cases.filter((c) => c.priority === 'urgent').length;
+  const urgentCases = cases.filter(
+    (c) => c.priority === 'urgent' && c.stage !== 'case-closed',
+  ).length;
   const inWorkshop = cases.filter(
     (c) =>
       c.stage === 'damage-assessment' ||
@@ -113,6 +116,8 @@ const Index = () => {
   const readyForDelivery = cases.filter(
     (c) => c.stage === 'ready-for-delivery'
   ).length;
+  const closedCases = cases.filter((c) => c.stage === 'case-closed').length;
+  const activeCases = cases.length - closedCases;
 
   return (
     <div className="min-h-screen bg-background">
@@ -172,24 +177,49 @@ const Index = () => {
       {/* Search & Filter Bar */}
       <div className="border-b bg-card">
         <div className="container mx-auto px-4 py-3">
-          {/* Stats row */}
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-3">
-            <div className="rounded-lg bg-muted px-3 py-2 text-sm">
-              <p className="text-muted-foreground text-xs">Total cases</p>
-              <p className="text-lg font-semibold">{totalCases}</p>
-            </div>
-            <div className="rounded-lg bg-status-urgent/10 px-3 py-2 text-sm">
-              <p className="text-xs text-status-urgent">Urgent cases</p>
-              <p className="text-lg font-semibold text-status-urgent">{urgentCases}</p>
-            </div>
-            <div className="rounded-lg bg-muted px-3 py-2 text-sm">
-              <p className="text-muted-foreground text-xs">In workshop</p>
-              <p className="text-lg font-semibold">{inWorkshop}</p>
-            </div>
-            <div className="rounded-lg bg-muted px-3 py-2 text-sm">
-              <p className="text-muted-foreground text-xs">Ready for delivery</p>
-              <p className="text-lg font-semibold">{readyForDelivery}</p>
-            </div>
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <p className="text-xs text-muted-foreground">
+              Use filters below to focus on specific cases. Open summary for a quick overview.
+            </p>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-1">
+                  <BarChart3 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Summary</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Board summary</DialogTitle>
+                </DialogHeader>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-lg bg-muted px-3 py-2 text-sm">
+                    <p className="text-muted-foreground text-xs">Total cases</p>
+                    <p className="text-lg font-semibold">{totalCases}</p>
+                  </div>
+                  <div className="rounded-lg bg-muted px-3 py-2 text-sm">
+                    <p className="text-muted-foreground text-xs">Active cases</p>
+                    <p className="text-lg font-semibold">{activeCases}</p>
+                  </div>
+                  <div className="rounded-lg bg-status-urgent/10 px-3 py-2 text-sm">
+                    <p className="text-xs text-status-urgent">Urgent cases</p>
+                    <p className="text-lg font-semibold text-status-urgent">{urgentCases}</p>
+                  </div>
+                  <div className="rounded-lg bg-muted px-3 py-2 text-sm">
+                    <p className="text-muted-foreground text-xs">In workshop</p>
+                    <p className="text-lg font-semibold">{inWorkshop}</p>
+                  </div>
+                  <div className="rounded-lg bg-muted px-3 py-2 text-sm">
+                    <p className="text-muted-foreground text-xs">Ready for delivery</p>
+                    <p className="text-lg font-semibold">{readyForDelivery}</p>
+                  </div>
+                  <div className="rounded-lg bg-muted px-3 py-2 text-sm sm:col-span-2">
+                    <p className="text-muted-foreground text-xs">Closed cases</p>
+                    <p className="text-lg font-semibold">{closedCases}</p>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
 
           <SearchFilter
