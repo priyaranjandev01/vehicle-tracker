@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Case, CaseStage, STAGE_LABELS, InsuranceStatus, PartsStatus } from '@/types/case';
+import { Case, CaseStage, STAGE_LABELS, InsuranceStatus, PartsStatus, INSURANCE_LABELS } from '@/types/case';
 import {
   Sheet,
   SheetContent,
@@ -41,10 +41,14 @@ interface CaseDetailSheetProps {
   onDeletePhoto: (caseId: string, photoId: string) => void;
 }
 
-const insuranceColors = {
-  pending: 'bg-status-pending text-white',
-  approved: 'bg-status-approved text-white',
-  rejected: 'bg-status-rejected text-white',
+const insuranceColors: Record<InsuranceStatus, string> = {
+  'not-applied': 'bg-muted text-muted-foreground',
+  'applied': 'bg-blue-500 text-white',
+  'inspector-scheduled': 'bg-purple-500 text-white',
+  'inspected': 'bg-indigo-500 text-white',
+  'under-review': 'bg-status-pending text-white',
+  'approved': 'bg-status-approved text-white',
+  'rejected': 'bg-status-rejected text-white',
   'not-applicable': 'bg-muted text-muted-foreground',
 };
 
@@ -162,14 +166,15 @@ export function CaseDetailSheet({
                 >
                   <SelectTrigger className="w-[180px]">
                     <Badge className={cn('w-full justify-center', insuranceColors[caseData.insuranceStatus])}>
-                      {caseData.insuranceStatus}
+                      {INSURANCE_LABELS[caseData.insuranceStatus]}
                     </Badge>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="approved">Approved</SelectItem>
-                    <SelectItem value="rejected">Rejected</SelectItem>
-                    <SelectItem value="not-applicable">Not Applicable</SelectItem>
+                    {Object.entries(INSURANCE_LABELS).map(([key, label]) => (
+                      <SelectItem key={key} value={key}>
+                        {label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
