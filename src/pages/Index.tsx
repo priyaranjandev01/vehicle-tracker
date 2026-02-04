@@ -7,12 +7,14 @@ import { CaseDetailSheet } from '@/components/CaseDetailSheet';
 import { AddNoteDialog } from '@/components/AddNoteDialog';
 import { SearchFilter } from '@/components/SearchFilter';
 import { Button } from '@/components/ui/button';
-import { Plus, Car, FileText } from 'lucide-react';
+import { Plus, Car, FileText, BookOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
   const { cases, addCase, updateCase, moveCase, addNote, addPhoto, deletePhoto, deleteCase } = useCases();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
@@ -120,6 +122,16 @@ const Index = () => {
                   </div>
                 )}
               </div>
+
+              <Button
+                onClick={() => navigate('/documentation')}
+                variant="ghost"
+                size="icon"
+                className="text-primary-foreground hover:bg-primary-foreground/10"
+                title="Documentation"
+              >
+                <BookOpen className="h-5 w-5" />
+              </Button>
 
               <Button
                 onClick={() => setShowAddDialog(true)}
