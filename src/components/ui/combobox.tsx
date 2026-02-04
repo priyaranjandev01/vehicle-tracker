@@ -90,6 +90,9 @@ export function Combobox({
             align="start"
             sideOffset={4}
             avoidCollisions={false}
+             // Add these two props:
+            onOpenAutoFocus={(e) => e.preventDefault()}
+            onCloseAutoFocus={(e) => e.preventDefault()}
           >
         <Command shouldFilter={false}>
           <CommandInput
@@ -100,7 +103,9 @@ export function Combobox({
           />
         <CommandList
   className="max-h-[35vh] overflow-y-auto overscroll-contain touch-pan-y"
-  style={{ WebkitOverflowScrolling: 'touch' }}
+  style={{ WebkitOverflowScrolling: 'touch',
+     pointerEvents: 'auto'
+   }}
   onWheel={(e) => e.stopPropagation()}
 >
 
@@ -126,6 +131,7 @@ export function Combobox({
         value={option}
         onSelect={() => handleSelect(option)}
         className="min-h-[44px]"
+        onMouseDown={(e) => e.preventDefault()}
       >
         <Check
           className={cn(
