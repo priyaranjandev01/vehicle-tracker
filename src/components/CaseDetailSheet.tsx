@@ -171,7 +171,7 @@ export function CaseDetailSheet({
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-sm">Ins:</span>
+                <span className="text-sm">Insurance</span>
                 <Select
                   value={caseData.insuranceStatus}
                   onValueChange={(value) =>
