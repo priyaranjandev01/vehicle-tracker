@@ -2,8 +2,9 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Case, CaseStage } from '@/types/case';
 import { recompressDataUrl } from '@/lib/imageCompression';
 import { MAX_PHOTOS_PER_CASE } from '@/constants';
+import { getStoredCases, setStoredCases, isIndexedDBAvailable } from '@/lib/storage';
 
-const STORAGE_KEY = 'servicedesk-cases';
+const LEGACY_STORAGE_KEY = 'servicedesk-cases';
 
 const QUOTA_ERROR_NAMES = ['QuotaExceededError', 'QUOTA_EXCEEDED_ERR'];
 function isQuotaError(err: unknown): boolean {
@@ -12,7 +13,36 @@ function isQuotaError(err: unknown): boolean {
   if (err && typeof err === 'object' && 'code' in err && (err as { code: number }).code === 22)
     return true;
   const msg = err && typeof err === 'object' && 'message' in err ? String((err as { message: unknown }).message) : '';
-  return /quota|storage full|disk full|no space left/i.test(msg);
+  return /quota exceeded|quotaexceeded|storage full|disk full|no space left/i.test(msg);
+}
+
+function normalizeParsedCases(parsed: any[]): Case[] {
+  const now = new Date();
+  return parsed.map((c: any) => {
+    const createdAt = new Date(c.createdAt);
+    const updatedAt = new Date(c.updatedAt);
+    return {
+      ...c,
+      createdAt: Number.isNaN(createdAt.getTime()) ? now : createdAt,
+      updatedAt: Number.isNaN(updatedAt.getTime()) ? now : updatedAt,
+      notes: (c.notes || []).map((n: any) => {
+        const timestamp = new Date(n.timestamp);
+        return {
+          ...n,
+          timestamp: Number.isNaN(timestamp.getTime()) ? now : timestamp,
+        };
+      }),
+      photos: (c.photos || [])
+        .slice(0, MAX_PHOTOS_PER_CASE)
+        .map((p: any) => {
+          const timestamp = new Date(p.timestamp);
+          return {
+            ...p,
+            timestamp: Number.isNaN(timestamp.getTime()) ? now : timestamp,
+          };
+        }),
+    };
+  });
 }
 
 export function useCases() {
@@ -20,69 +50,112 @@ export function useCases() {
   const [isLoading, setIsLoading] = useState(true);
   const lastSaveSucceeded = useRef(true);
 
-  // Load cases from localStorage on mount
+  // Load cases from IndexedDB (supports 50–100+ cases with 25 photos each). Migrate from localStorage if present.
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          const now = new Date();
-          const casesWithDates = parsed.map((c: any) => {
-            const createdAt = new Date(c.createdAt);
-            const updatedAt = new Date(c.updatedAt);
-            return {
-              ...c,
-              createdAt: Number.isNaN(createdAt.getTime()) ? now : createdAt,
-              updatedAt: Number.isNaN(updatedAt.getTime()) ? now : updatedAt,
-              notes: (c.notes || []).map((n: any) => {
-                const timestamp = new Date(n.timestamp);
-                return {
-                  ...n,
-                  timestamp: Number.isNaN(timestamp.getTime()) ? now : timestamp,
-                };
-              }),
-              photos: (c.photos || [])
-                .slice(0, MAX_PHOTOS_PER_CASE)
-                .map((p: any) => {
-                  const timestamp = new Date(p.timestamp);
-                  return {
-                    ...p,
-                    timestamp: Number.isNaN(timestamp.getTime()) ? now : timestamp,
-                  };
-                }),
-            };
-          });
-          setCases(casesWithDates);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load stored cases, clearing corrupted data.', error);
-      localStorage.removeItem(STORAGE_KEY);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    let cancelled = false;
 
-  // Save to localStorage whenever cases change
-  useEffect(() => {
-    if (!isLoading) {
+    async function load() {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(cases));
-        lastSaveSucceeded.current = true;
-      } catch (err) {
-        if (isQuotaError(err)) {
-          console.error('Storage quota exceeded:', err);
-          // Only notify when we transition from "save was ok" to "quota hit"
-          // so we don't show the toast on every dropdown change or delete/add while over quota
-          if (lastSaveSucceeded.current) {
-            lastSaveSucceeded.current = false;
-            window.dispatchEvent(
-              new CustomEvent('servicedesk-storage-error', { detail: err }),
-            );
+        if (isIndexedDBAvailable()) {
+          const stored = await getStoredCases();
+          if (stored && !cancelled) {
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed)) {
+              setCases(normalizeParsedCases(parsed));
+            }
+          }
+          // One-time migration: if IDB was empty, load from localStorage and copy to IDB
+          if (!stored) {
+            try {
+              const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+              if (legacy && !cancelled) {
+                const parsed = JSON.parse(legacy);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  const normalized = normalizeParsedCases(parsed);
+                  setCases(normalized);
+                  await setStoredCases(JSON.stringify(normalized));
+                  localStorage.removeItem(LEGACY_STORAGE_KEY);
+                }
+              }
+            } catch {
+              localStorage.removeItem(LEGACY_STORAGE_KEY);
+            }
           }
         } else {
-          console.error('Failed to save cases:', err);
+          const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+          if (legacy && !cancelled) {
+            const parsed = JSON.parse(legacy);
+            if (Array.isArray(parsed)) setCases(normalizeParsedCases(parsed));
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load stored cases.', error);
+        if (!cancelled) {
+          try {
+            const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+            if (legacy) {
+              const parsed = JSON.parse(legacy);
+              if (Array.isArray(parsed)) setCases(normalizeParsedCases(parsed));
+            }
+          } catch {
+            localStorage.removeItem(LEGACY_STORAGE_KEY);
+          }
+        }
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    }
+
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Save to IndexedDB whenever cases change (no size cap; supports 50–100+ cases with 25 photos each)
+  useEffect(() => {
+    if (!isLoading) {
+      let payload: string;
+      try {
+        payload = JSON.stringify(cases);
+      } catch (err) {
+        console.error('Failed to serialize cases:', err);
+        return;
+      }
+
+      if (isIndexedDBAvailable()) {
+        setStoredCases(payload)
+          .then(() => {
+            lastSaveSucceeded.current = true;
+          })
+          .catch((err) => {
+            if (isQuotaError(err)) {
+              console.error('Storage quota exceeded:', err);
+              if (lastSaveSucceeded.current) {
+                lastSaveSucceeded.current = false;
+                window.dispatchEvent(
+                  new CustomEvent('servicedesk-storage-error', { detail: err }),
+                );
+              }
+            } else {
+              console.error('Failed to save cases:', err);
+            }
+          });
+      } else {
+        try {
+          localStorage.setItem(LEGACY_STORAGE_KEY, payload);
+          lastSaveSucceeded.current = true;
+        } catch (err) {
+          if (isQuotaError(err)) {
+            if (lastSaveSucceeded.current) {
+              lastSaveSucceeded.current = false;
+              window.dispatchEvent(
+                new CustomEvent('servicedesk-storage-error', { detail: err }),
+              );
+            }
+          } else {
+            console.error('Failed to save cases:', err);
+          }
         }
       }
     }
