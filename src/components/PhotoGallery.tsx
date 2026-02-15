@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { X, Trash2, ZoomIn, Download } from 'lucide-react';
-import { format } from 'date-fns';
+import { safeFormat } from '@/lib/safeDate';
 import { useToast } from '@/hooks/use-toast';
 
 interface PhotoGalleryProps {
@@ -34,6 +34,7 @@ const downloadImage = (dataUrl: string, filename: string): boolean => {
 export function PhotoGallery({ photos, onDeletePhoto, readOnly }: PhotoGalleryProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<CasePhoto | null>(null);
   const { toast } = useToast();
+  const list = photos ?? [];
 
   const handleDownload = (dataUrl: string, photoId: string) => {
     const success = downloadImage(dataUrl, `photo-${photoId.slice(0, 8)}.jpg`);
@@ -51,7 +52,7 @@ export function PhotoGallery({ photos, onDeletePhoto, readOnly }: PhotoGalleryPr
     }
   };
 
-  if (photos.length === 0) {
+  if (list.length === 0) {
     return (
       <p className="text-sm text-muted-foreground text-center py-4">
         No photos yet
@@ -62,7 +63,7 @@ export function PhotoGallery({ photos, onDeletePhoto, readOnly }: PhotoGalleryPr
   return (
     <>
       <div className="grid grid-cols-3 gap-2">
-        {photos.map((photo) => (
+        {list.map((photo) => (
           <div
             key={photo.id}
             className="relative aspect-square rounded-lg overflow-hidden bg-muted group cursor-pointer"
@@ -113,7 +114,7 @@ export function PhotoGallery({ photos, onDeletePhoto, readOnly }: PhotoGalleryPr
         <DialogContent className="max-w-[90vw] max-h-[90vh] p-2">
           <DialogHeader className="p-2">
             <DialogTitle className="text-sm font-normal text-muted-foreground">
-              {selectedPhoto && format(selectedPhoto.timestamp, 'MMM d, yyyy h:mm a')}
+              {selectedPhoto && safeFormat(selectedPhoto.timestamp, 'MMM d, yyyy h:mm a')}
             </DialogTitle>
           </DialogHeader>
           {selectedPhoto && (
