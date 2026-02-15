@@ -150,11 +150,15 @@ export function AddCaseDialog({ open, onOpenChange, onAddCase }: AddCaseDialogPr
               <Input
                 id="customerPhone"
                 type="tel"
+                inputMode="numeric"
+                autoComplete="tel"
+                maxLength={10}
                 value={formData.customerPhone}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, customerPhone: e.target.value }))
-                }
-                placeholder="Mobile number"
+                onChange={(e) => {
+                  const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+                  setFormData((prev) => ({ ...prev, customerPhone: digits }));
+                }}
+                placeholder="10 digits"
               />
             </div>
           </div>
@@ -200,7 +204,7 @@ export function AddCaseDialog({ open, onOpenChange, onAddCase }: AddCaseDialogPr
                   registrationNumber: e.target.value.toUpperCase(),
                 }))
               }
-              placeholder="e.g., MH12AB1234"
+              placeholder="e.g., OD25PD1618"
               className="uppercase"
             />
           </div>
