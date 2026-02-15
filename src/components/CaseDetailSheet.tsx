@@ -25,6 +25,7 @@ import {
   MessageSquare,
   Send,
   ImageIcon,
+  MessageCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { safeFormat } from '@/lib/safeDate';
@@ -81,7 +82,7 @@ export function CaseDetailSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-[480px] overflow-y-auto">
+      <SheetContent className="w-full sm:max-w-[560px] min-h-[60vh] overflow-y-auto">
         <SheetHeader className="pb-4">
           <div className="flex items-center gap-2">
             {caseData.priority === 'urgent' && (
@@ -89,13 +90,25 @@ export function CaseDetailSheet({
             )}
             <SheetTitle className="text-xl">{caseData.customerName}</SheetTitle>
           </div>
-          <a
-            href={`tel:${caseData.customerPhone}`}
-            className="flex items-center gap-2 text-primary hover:underline"
-          >
-            <Phone className="h-4 w-4" />
-            {caseData.customerPhone}
-          </a>
+          <div className="flex flex-wrap items-center gap-3">
+            <a
+              href={`tel:${caseData.customerPhone}`}
+              className="flex items-center gap-2 text-primary hover:underline"
+            >
+              <Phone className="h-4 w-4" />
+              {caseData.customerPhone}
+            </a>
+            <a
+              href={`https://wa.me/${caseData.customerPhone.replace(/\D/g, '').replace(/^0+/, '').length === 10 ? '91' : ''}${caseData.customerPhone.replace(/\D/g, '').replace(/^0+/, '')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-[#25D366] hover:underline"
+              aria-label="Chat on WhatsApp"
+            >
+              <MessageCircle className="h-4 w-4" />
+              WhatsApp
+            </a>
+          </div>
         </SheetHeader>
 
         <div className="space-y-6">
@@ -158,7 +171,7 @@ export function CaseDetailSheet({
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-sm">Insurance</span>
+                <span className="text-sm">Ins:</span>
                 <Select
                   value={caseData.insuranceStatus}
                   onValueChange={(value) =>

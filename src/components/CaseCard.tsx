@@ -147,7 +147,7 @@ export function CaseCard({
         {/* Status Badges */}
         <div className="flex flex-wrap gap-1.5">
           <Badge className={cn('text-xs', insuranceColors[caseData.insuranceStatus])}>
-            {INSURANCE_LABELS[caseData.insuranceStatus]}
+            Ins: {INSURANCE_LABELS[caseData.insuranceStatus]}
           </Badge>
           <Badge className={cn('text-xs', partsColors[caseData.partsStatus])}>
             Parts: {caseData.partsStatus.replace('-', ' ')}
