@@ -7,50 +7,107 @@ import { useToast } from '@/hooks/use-toast';
 interface PhotoCaptureProps {
   onPhotoCapture: (dataUrl: string) => void;
   disabled?: boolean;
+  /** Max total photos allowed for this case (e.g. 20). Enforced to avoid memory/crash. */
+  maxTotal?: number;
+  /** Current number of photos already added (used with maxTotal to cap uploads). */
+  currentCount?: number;
 }
 
-export function PhotoCapture({ onPhotoCapture, disabled }: PhotoCaptureProps) {
+export function PhotoCapture({
+  onPhotoCapture,
+  disabled,
+  maxTotal,
+  currentCount = 0,
+}: PhotoCaptureProps) {
   const [isCompressing, setIsCompressing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  const handleFile = async (file: File) => {
-    if (!file.type.startsWith('image/')) {
+  const processFilesSequentially = async (fileList: FileList) => {
+    const allFiles = Array.from(fileList).filter((file) => file.type.startsWith('image/'));
+    const skipped = fileList.length - allFiles.length;
+    if (allFiles.length === 0) {
+      if (skipped > 0) {
+        toast({
+          title: 'Invalid files',
+          description: 'Please select image files only.',
+          variant: 'destructive',
+        });
+      }
+      return;
+    }
+
+    const maxToAdd =
+      maxTotal != null && currentCount != null
+        ? Math.max(0, maxTotal - currentCount)
+        : allFiles.length;
+    const files = maxToAdd < allFiles.length ? allFiles.slice(0, maxToAdd) : allFiles;
+    const capped = allFiles.length > files.length;
+
+    if (maxToAdd === 0) {
       toast({
-        title: 'Invalid file',
-        description: 'Please select an image file.',
+        title: 'Photo limit reached',
+        description: `Maximum ${maxTotal} photos per case. Remove some to add more.`,
         variant: 'destructive',
       });
       return;
     }
 
     setIsCompressing(true);
-    try {
-      const compressedDataUrl = await compressImage(file);
-      onPhotoCapture(compressedDataUrl);
+    let added = 0;
+    let failed = 0;
+
+    for (let i = 0; i < files.length; i++) {
+      try {
+        const compressedDataUrl = await compressImage(files[i]);
+        onPhotoCapture(compressedDataUrl);
+        added++;
+      } catch (error) {
+        console.error('Failed to compress image:', error);
+        failed++;
+      }
+    }
+
+    setIsCompressing(false);
+
+    if (skipped > 0) {
       toast({
-        title: 'Photo added',
-        description: 'Image compressed and saved.',
-      });
-    } catch (error) {
-      console.error('Failed to compress image:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to process image.',
+        title: 'Skipped non-images',
+        description: `${skipped} file(s) were not images and were skipped.`,
         variant: 'destructive',
       });
-    } finally {
-      setIsCompressing(false);
+    }
+    if (capped) {
+      toast({
+        title: 'Photo limit applied',
+        description: `Only first ${maxToAdd} photo(s) added (max ${maxTotal} per case).`,
+        variant: 'destructive',
+      });
+    }
+    if (added > 0) {
+      toast({
+        title: added === 1 ? 'Photo added' : 'Photos added',
+        description:
+          added === 1
+            ? 'Image compressed and saved.'
+            : `${added} image(s) compressed and saved.`,
+      });
+    }
+    if (failed > 0) {
+      toast({
+        title: 'Some photos failed',
+        description: `${failed} image(s) could not be processed.`,
+        variant: 'destructive',
+      });
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      Array.from(files).forEach(file => handleFile(file));
+      void processFilesSequentially(files);
     }
-    // Reset input so same file can be selected again
     e.target.value = '';
   };
 

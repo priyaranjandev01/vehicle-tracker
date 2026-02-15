@@ -20,7 +20,7 @@ import {
   Flag,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { formatDistanceToNow } from 'date-fns';
+import { safeFormatDistanceToNow } from '@/lib/safeDate';
 
 interface CaseCardProps {
   caseData: Case;
@@ -160,7 +160,7 @@ export function CaseCard({
             <MessageSquare className="h-3 w-3" />
             {caseData.notes.length} notes
           </span>
-          <span>{formatDistanceToNow(caseData.updatedAt, { addSuffix: true })}</span>
+          <span>{safeFormatDistanceToNow(caseData.updatedAt, { addSuffix: true })}</span>
         </div>
       </CardContent>
     </Card>

@@ -19,8 +19,9 @@ import {
 } from '@/components/ui/select';
 import { Combobox } from '@/components/ui/combobox';
 import { Switch } from '@/components/ui/switch';
-import { Case, CaseStage, InsuranceStatus, PartsStatus, CasePhoto } from '@/types/case';
+import { Case, CaseStage, InsuranceStatus, PartsStatus } from '@/types/case';
 import { PhotoCapture } from '@/components/PhotoCapture';
+import { MAX_PHOTOS_PER_CASE, MAX_PHOTOS_PREVIEW } from '@/constants';
 import { ImageIcon, X } from 'lucide-react';
 
 interface AddCaseDialogProps {
@@ -70,7 +71,9 @@ export function AddCaseDialog({ open, onOpenChange, onAddCase }: AddCaseDialogPr
   const [photos, setPhotos] = useState<string[]>([]);
 
   const handlePhotoCapture = (dataUrl: string) => {
-    setPhotos(prev => [...prev, dataUrl]);
+    setPhotos((prev) =>
+      prev.length >= MAX_PHOTOS_PER_CASE ? prev : [...prev, dataUrl],
+    );
   };
 
   const handleRemovePhoto = (index: number) => {
@@ -80,18 +83,25 @@ export function AddCaseDialog({ open, onOpenChange, onAddCase }: AddCaseDialogPr
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    onAddCase({
-      customerName: formData.customerName,
-      customerPhone: formData.customerPhone,
-      vehicleModel: formData.vehicleModel,
-      vehicleColor: formData.vehicleColor,
-      registrationNumber: formData.registrationNumber.toUpperCase(),
-      damageDescription: formData.damageDescription,
-      stage: 'new-intake' as CaseStage,
-      insuranceStatus: 'not-applied' as InsuranceStatus,
-      partsStatus: 'not-ordered' as PartsStatus,
-      priority: formData.isUrgent ? 'urgent' : 'normal',
-    }, photos.length > 0 ? photos : undefined);
+    const photosToSave =
+      photos.length > 0
+        ? photos.slice(0, MAX_PHOTOS_PER_CASE)
+        : undefined;
+    onAddCase(
+      {
+        customerName: formData.customerName,
+        customerPhone: formData.customerPhone,
+        vehicleModel: formData.vehicleModel,
+        vehicleColor: formData.vehicleColor,
+        registrationNumber: formData.registrationNumber.toUpperCase(),
+        damageDescription: formData.damageDescription,
+        stage: 'new-intake' as CaseStage,
+        insuranceStatus: 'not-applied' as InsuranceStatus,
+        partsStatus: 'not-ordered' as PartsStatus,
+        priority: formData.isUrgent ? 'urgent' : 'normal',
+      },
+      photosToSave,
+    );
 
     // Reset form
     setFormData({
@@ -215,12 +225,23 @@ export function AddCaseDialog({ open, onOpenChange, onAddCase }: AddCaseDialogPr
               Damage Photos
               <span className="text-muted-foreground font-normal">(Recommended)</span>
             </div>
-            <PhotoCapture onPhotoCapture={handlePhotoCapture} />
+            <PhotoCapture
+              onPhotoCapture={handlePhotoCapture}
+              maxTotal={MAX_PHOTOS_PER_CASE}
+              currentCount={photos.length}
+            />
             {photos.length > 0 && (
-              <div className="flex gap-2 flex-wrap mt-2">
-                {photos.map((photo, index) => (
-                  <div key={index} className="relative w-16 h-16 rounded-md overflow-hidden group">
-                    <img src={photo} alt={`Photo ${index + 1}`} className="w-full h-full object-cover" />
+              <div className="flex gap-2 flex-wrap mt-2 items-center">
+                {photos.slice(0, MAX_PHOTOS_PREVIEW).map((photo, index) => (
+                  <div
+                    key={index}
+                    className="relative w-16 h-16 rounded-md overflow-hidden group flex-shrink-0"
+                  >
+                    <img
+                      src={photo}
+                      alt={`Photo ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
                     <Button
                       type="button"
                       size="icon"
@@ -232,7 +253,17 @@ export function AddCaseDialog({ open, onOpenChange, onAddCase }: AddCaseDialogPr
                     </Button>
                   </div>
                 ))}
+                {photos.length > MAX_PHOTOS_PREVIEW && (
+                  <div className="w-16 h-16 rounded-md bg-muted flex items-center justify-center text-xs text-muted-foreground flex-shrink-0">
+                    +{photos.length - MAX_PHOTOS_PREVIEW} more
+                  </div>
+                )}
               </div>
+            )}
+            {photos.length >= MAX_PHOTOS_PER_CASE && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Maximum {MAX_PHOTOS_PER_CASE} photos per case.
+              </p>
             )}
           </div>
 

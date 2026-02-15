@@ -27,9 +27,10 @@ import {
   ImageIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
+import { safeFormat } from '@/lib/safeDate';
 import { PhotoCapture } from '@/components/PhotoCapture';
 import { PhotoGallery } from '@/components/PhotoGallery';
+import { MAX_PHOTOS_PER_CASE } from '@/constants';
 
 interface CaseDetailSheetProps {
   caseData: Case | null;
@@ -213,6 +214,8 @@ export function CaseDetailSheet({
 
             <PhotoCapture
               onPhotoCapture={(dataUrl) => onAddPhoto(caseData.id, dataUrl)}
+              maxTotal={MAX_PHOTOS_PER_CASE}
+              currentCount={caseData.photos?.length ?? 0}
             />
 
             <PhotoGallery
@@ -262,7 +265,7 @@ export function CaseDetailSheet({
                   >
                     <p>{note.text}</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {format(note.timestamp, 'MMM d, h:mm a')}
+                      {safeFormat(note.timestamp, 'MMM d, h:mm a')}
                     </p>
                   </div>
                 ))
@@ -274,11 +277,11 @@ export function CaseDetailSheet({
           <div className="text-xs text-muted-foreground space-y-1 pt-4 border-t">
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
-              Created: {format(caseData.createdAt, 'MMM d, yyyy h:mm a')}
+              Created: {safeFormat(caseData.createdAt, 'MMM d, yyyy h:mm a')}
             </div>
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
-              Updated: {format(caseData.updatedAt, 'MMM d, yyyy h:mm a')}
+              Updated: {safeFormat(caseData.updatedAt, 'MMM d, yyyy h:mm a')}
             </div>
           </div>
         </div>

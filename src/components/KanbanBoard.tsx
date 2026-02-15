@@ -1,4 +1,5 @@
 import { Case, CaseStage, STAGE_ORDER } from '@/types/case';
+import { safeGetTime } from '@/lib/safeDate';
 import { KanbanColumn } from './KanbanColumn';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
@@ -26,7 +27,7 @@ export function KanbanBoard({
         // Priority cases first, then by update time
         if (a.priority === 'urgent' && b.priority !== 'urgent') return -1;
         if (a.priority !== 'urgent' && b.priority === 'urgent') return 1;
-        return b.updatedAt.getTime() - a.updatedAt.getTime();
+        return safeGetTime(b.updatedAt) - safeGetTime(a.updatedAt);
       });
 
   return (
